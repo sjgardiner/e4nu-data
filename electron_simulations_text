@@ -1,0 +1,32 @@
+void gst_example1() {
+  TFile* my_gst_file = new TFile( "/genie/app/users/tbarbera/gntp.0.gst.root" );
+
+  TTree* gst_tree = nullptr;
+  my_gst_file->GetObject( "gst", gst_tree );
+
+  double my_pxv, my_pyv, my_pzv, my_Ev, my_pxl, my_pyl, my_pzl, my_El
+  double proton_mass = 0.938
+
+  gst_tree->SetBranchAddress( "pxv", &my_pxv );
+  gst_tree->SetBranchAddress( "pyv", &my_pyv );
+  gst_tree->SetBranchAddress( "pzv", &my_pzv );
+  gst_tree->SetBranchAddress( "Ev", &my_Ev );
+  gst_tree->SetBranchAddress( "pxl", &my_pxl );
+  gst_tree->SetBranchAddress( "pyl", &my_pyl );
+  gst_tree->SetBranchAddress( "pzl", &my_pzl );
+  gst_tree->SetBranchAddress( "El", &my_El );
+
+  int num_entries = gst_tree->GetEntries();
+
+  for ( int e = 0; e < num_entries; ++e ) {
+    gst_tree->GetEntry( e );
+
+    TLorentzVector initial_electron(my_pxv, my_pyv, my_pzv, my_Ev);
+    TLorentzVector final_electron(my_pxl, my_pyl, my_pzl, my_El);
+
+    
+
+
+
+  }
+}
