@@ -5,6 +5,8 @@ void gst_example1() {
   my_gst_file->GetObject( "gst", gst_tree );
 
   double my_pxv, my_pyv, my_pzv, my_Ev, my_pxl, my_pyl, my_pzl, my_El
+  double my_pxf[100], my_pyf[100], my_pzf[100], my_Ef[100], my_nf[100]
+  double Q_2, W, theta_z, p_tot
   double proton_mass = 0.938
 
   gst_tree->SetBranchAddress( "pxv", &my_pxv );
@@ -15,6 +17,10 @@ void gst_example1() {
   gst_tree->SetBranchAddress( "pyl", &my_pyl );
   gst_tree->SetBranchAddress( "pzl", &my_pzl );
   gst_tree->SetBranchAddress( "El", &my_El );
+  gst_tree->SetBranchAddress( "El", &my_pxf );
+  gst_tree->SetBranchAddress( "El", &my_pyf );
+  gst_tree->SetBranchAddress( "El", &my_pzf );
+  gst_tree->SetBranchAddress( "El", &my_Ef );
 
   int num_entries = gst_tree->GetEntries();
 
@@ -24,9 +30,170 @@ void gst_example1() {
     TLorentzVector initial_electron(my_pxv, my_pyv, my_pzv, my_Ev);
     TLorentzVector final_electron(my_pxl, my_pyl, my_pzl, my_El);
 
-    
+    //Calculates the value of Q^2 for the given event
+    q = intial_electron - final_electron
+    Q_2 = -1*(q[3]*q[3] - q[2]*q[2] - q[1]*q[1] - q[0]*q[0])
 
+    //Calculates W for the event
+    W = TMath::Sqrt(-Q_2 + proton_mass*proton_mass + 2*proton_mass*(my_Ev - my_El))
 
+    //Calculates total momentum and angle WRT z-axis
+    p_tot = TMath::Sqrt(my_pxl*my_pxl + my_pyl*my_pyl + my_pzl*my_pzl)
+    theta_z = pzl/p_tot
 
+    //Sets counters for each type of hadron
+    proton_counter = 0 
+
+    pion_counter = 0
+
+    photon_counter = 0
+
+    //Goes through events with 1.1 GeV to check electron requirements
+    if ( my_Ev == 1.1 && Q_2 > 0.1 && p_tot > 0.40 && theta_z > (17 + 7/p_tot) && W < 2) {
+      //Checks individual requirements for hadrons
+      for ( int n = 0; n < my_nf; ++n ) {
+        //Creates vector with hadron values
+        hadron_vector = (my_pxf[n], my_pyf[n], my_pzf[n], my_Ef[n])
+        h_v = hadron_vector
+
+        //Determines type of hadron and checks related requirements
+        //Proton requirements
+        if ( nf[n] == 2212) {
+          proton_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_proton = h_v[2]/proton_momentum
+          if ( proton_momentum > 0.3 && theta_proton > 12){
+            proton_counter += 1
+          }
+
+        //Photon requirements
+        else if (nf[n] == 22){
+          photon_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+
+          if ( photon_momentum > 0.3){
+            photon_counter += 1
+          }
+
+        //Positive pion requirements
+        else if (nf[n] == 211){
+          pion_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_pion = h_v[2]/pion_momentum
+          if(pion_momentum > 0.15 && theta_pion > 12){
+            pion_counter += 1
+          }
+
+        //Negative pion requirements
+        else if (nf[n] == -211){
+          pion_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_pion = h_v[2]/pion_momentum
+          if(pion_momentum > 0.15 && theta_pion > (17 + 4/pion_momentum)){
+            pion_counter += 1
+            }
+          }
+        }
+      }      
+    }
+
+    //Goes through events with 2.2 GeV to check electron requirements
+    if ( my_Ev == 2.2 && Q_2 > 0.4 && p_tot > 0.55 && theta_z > (16 + 10.5/p_tot) && W < 2){
+
+      //Checks individual requirements for hadrons
+      for ( int n = 0; n < my_nf; ++n ) {
+        //Creates vector with hadron values
+        hadron_vector = (my_pxf[n], my_pyf[n], my_pzf[n], my_Ef[n])
+        h_v = hadron_vector
+
+        //Determines type of hadron and checks related requirements
+        //Proton requirements
+        if ( nf[n] == 2212) {
+          proton_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_proton = h_v[2]/proton_momentum
+          if ( proton_momentum > 0.3 && theta_proton > 12){
+            proton_counter += 1
+          }
+
+        //Photon requirements
+        else if (nf[n] == 22){
+          photon_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+
+          if ( photon_momentum > 0.3){
+            photon_counter += 1
+          }
+
+        //Positive pion requirements
+        else if (nf[n] == 211){
+          pion_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_pion = h_v[2]/pion_momentum
+          if(pion_momentum > 0.15 && theta_pion > 12){
+            pion_counter += 1
+          }
+
+        //Negative pion requirements
+        else if (nf[n] == -211){
+          pion_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_pion = h_v[2]/pion_momentum
+          if( pion_momentum > 0.35 && theta_pion > 25 + 7/pion_momentum){
+              pion_counter += 1
+            }
+          if( pion_momentum < 0.35 && theta_pion > 16 + 10/pion_momentum){
+            pion_counter += 1
+            }
+          }
+        }
+      }
+    }
+
+    //Goes through events with 4.4 GeV to check electron requirements
+    if ( my_Ev == 4.4 && Q_2 > 0.8 && p_tot > 1.1 && theta_z > (13.5 + 15/p_tot) && W < 2){
+
+      //Checks individual requirements for hadrons
+      for ( int n = 0; n < my_nf; ++n ) {
+        //Creates vector with hadron values
+        hadron_vector = (my_pxf[n], my_pyf[n], my_pzf[n], my_Ef[n])
+        h_v = hadron_vector
+
+        //Determines type of hadron and checks related requirements
+        //Proton requirements
+        if ( nf[n] == 2212) {
+          proton_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_proton = h_v[2]/proton_momentum
+          if ( proton_momentum > 0.3 && theta_proton > 12){
+            proton_counter += 1
+          }
+
+        //Photon requirements
+        else if (nf[n] == 22){
+          photon_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+
+          if ( photon_momentum > 0.3){
+            photon_counter += 1
+          }
+
+        //Positive pion requirements
+        else if (nf[n] == 211){
+          pion_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_pion = h_v[2]/pion_momentum
+          if(pion_momentum > 0.15 && theta_pion > 12){
+            pion_counter += 1
+          }
+
+        //Negative pion requirements
+        else if (nf[n] == -211){
+          pion_momentum = TMath::Sqrt(h_v[0]*h_v[0]+h_v[1]*h_v[1]+h_v[2]*h_v[2])
+          theta_pion = h_v[2]/pion_momentum
+          if( pion_momentum > 0.35 && theta_pion > 25 + 7/pion_momentum){
+              pion_counter += 1
+            }
+          if( pion_momentum < 0.35 && theta_pion > 16 + 10/pion_momentum){
+            pion_counter += 1
+            }
+          }
+        }
+      }
+    }
+
+    //Counts the event if it meets the requirements
+    if (proton_counter == 1 && pion_counter == 0 && photon_counter == 0 ){
+      return true
+    }
   }
 }
