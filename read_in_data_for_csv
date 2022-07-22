@@ -1,0 +1,74 @@
+#include "Riostream.h"
+#include "TMath.h"
+#include <iostream>
+#include <fstream>
+
+//Begin command
+void read_in_data_for_csv()
+{
+    //Pull from file and define vectors, adding the initial error to its respective vector
+    std::ifstream in_file( "41586_2021_4046_MOESM2_ESM.csv" );  
+    std::vector<double> low_bin_edge;
+    std::vector<double> high_bin_edge;
+    std::vector<double> cross_section;
+    std::vector<double> error;
+    std::string line;
+
+    error.push_back( 0.000 );
+
+    //Accounts for the lines prior to actually starting the dataset
+    std::getline(in_file, line);
+    std::getline(in_file, line);
+    std::getline(in_file, line);
+
+    //Goes through dataset and takes values
+    while ( std::getline(in_file, line) ){
+
+        //Defines variables for loop
+        std::stringstream line_ss( line );
+        char dummy;
+        int bin_index;
+        double value_1, value_2, value_3, value_4;
+
+        //Goes through file and assigns values to variables
+        line_ss >> bin_index >> dummy >> value_1 >> dummy >> value_2 >> dummy >> value_3 >> dummy >> value_4;
+
+        //Puts variables in their respective vectors
+        low_bin_edge.push_back( value_1 );
+        high_bin_edge.push_back( value_2 );
+        cross_section.push_back( value_3 );
+        error.push_back( value_4 );
+
+    }
+
+    //Prints out first line of data
+    std::cout << "First Low bin edge = " << low_bin_edge.at( 0 ) << '\n';
+    std::cout << "First High bin edge = " << high_bin_edge.at( 0 ) << '\n';
+    std::cout << "First cross section = " << cross_section.at( 0 ) << '\n';
+    std::cout << "First error = " << error.at( 0 ) << '\n';   
+
+
+    
+    std::vector<double> bin_edges = low_bin_edge;
+
+    int n_bins = low_bin_edge.size();
+
+    bin_edges.push_back(high_bin_edge[n_bins - 1]);
+
+    double* bin_edges_array = &bin_edges[0];
+
+    TH1D *e4nu_cross_sections = new TH1D("e4nu cross sections", "e4nu cross sections", n_bins, bin_edges_array);
+
+    for( int i =0; i < n_bins; i++){
+
+        e4nu_cross_sections->SetBinContent(i+1, cross_section[i]);
+
+        e4nu_cross_sections->SetBinError(i+1, error[i]);
+
+    }
+
+    e4nu_cross_sections->Draw();
+     
+
+}
+
